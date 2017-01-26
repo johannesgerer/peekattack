@@ -1,0 +1,34 @@
+/***
+ * APE JSF Setup
+ */
+APE.Config.baseUrl = 'http://bl.peekattack.com'; //APE JSF 
+APE.Config.domain = 'bl.peekattack.com'; //versteh ich nicht
+APE.Config.server = '0.bl.peekattack.com:80';//APE server URL
+
+(function(){
+	for (var i = 0; i < arguments.length; i++)
+		APE.Config.scripts.push(APE.Config.baseUrl + '/Source/' + arguments[i] + '.js');
+})('peekAttackcore');
+//})('mootools-core', 'Core/APE', 'Core/Events', 'Core/Core', 'Pipe/Pipe', 'Pipe/PipeProxy', 'Pipe/PipeMulti', 'Pipe/PipeSingle', 'Request/Request','Request/Request.Stack', 'Request/Request.CycledStack', 'Transport/Transport.longPolling','Transport/Transport.SSE', 'Transport/Transport.XHRStreaming',  'Transport/Transport.WebSocket', 'Transport/Transport.JSONP', 'Core/Utility', 'Core/JSON');
+
+
+//max
+//Facebook.appId = '106654652697509';
+
+
+//jo
+//Facebook.appId = '117040568314899';
+
+
+//test (beforelive)
+//Facebook.appId = '109943032354863';
+
+//live
+//Facebook.appId = '378549925479';
+
+
+
+/***
+ * Share Snapshot   -   abolsute für Facebook Wall entry!
+ */
+var snapshotRedirectURL = "http://bl.peekattack.com/snapshots/snapshot_redirect.php";

@@ -1,0 +1,30 @@
+<? 
+define('APE_URL', "http://0.bl.peekattack.com");
+
+//max
+/*
+define('APP_ID', '');
+define('APP_SECRET', '');
+*/
+
+//jo
+/*
+define('APP_ID', '');
+define('APP_SECRET', '');
+*/
+
+//test (beforelive)
+/*
+define('APP_ID', '');
+define('APP_SECRET', '');
+*/
+
+//live
+/*
+define('APP_ID', '');
+define('APP_SECRET', '');
+*/
+	        
+?>
+
+

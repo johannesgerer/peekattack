@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"  layout="absolute" xmlns:s="library://ns.adobe.com/flex/spark"
+				initialize="init()">
+
+<fx:Script>
+
+<![CDATA[
+	import flash.utils.setTimeout;
+	
+	import mx.containers.GridItem;
+	import mx.containers.GridRow;
+	import mx.controls.Alert;
+	import mx.controls.Text;
+	import mx.core.UIComponent;
+	import mx.graphics.codec.JPEGEncoder;
+	import mx.graphics.codec.PNGEncoder;
+	import mx.logging.Log;
+	import mx.rpc.events.FaultEvent;
+	import mx.rpc.events.ResultEvent;
+	import mx.utils.Base64Encoder;
+	import mx.utils.ObjectUtil;
+
+	private var gridItem:GridItem;
+	
+	private function chatGridItem(text:String, color:String=null):GridItem
+	{
+		var gi:GridItem = new GridItem();
+		var t:Text = new Text();
+		
+		if(color)//if it is a Partner/Me column
+		{
+			gi.setStyle('color',color);
+			t.setStyle('textAlign','right');
+			
+			t.width = 55;
+			gi.setStyle('fontWeight','bold');
+		}else{
+			
+			gi.percentWidth= 100;
+			t.percentWidth= 100;
+		}
+		
+		
+		gridItem = gi;	
+		t.htmlText = text;
+		gi.addChild(t);
+		
+		return gi;
+	}
+	
+	private function chatGridRow(partner:Boolean,text:String):GridRow
+	{
+		var gr:GridRow = new GridRow();
+		gr.addChild(chatGridItem(	partner ? 'Partner:' : 'Me:',
+			partner ? '#3b5998' : '#666666'));
+		
+		gr.addChild(chatGridItem(text));
+		return gr;
+	}
+	
+	private function init():void{
+		
+			
+		chat_message_grid.addChild(chatGridRow(true,"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a "));
+		chat_message_grid.addChild(chatGridRow(true,"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a "));
+		chat_message_grid.addChild(chatGridRow(true,"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a "));
+		chat_message_grid.addChild(chatGridRow(true,"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a "));
+		chat_message_grid.addChild(chatGridRow(true,"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a "));
+		
+		snapshot_target.height = 570;
+		snapRemoteVideo.width = 300;
+		
+		gridItem.setStyle('borderStyle','solid');
+		gridItem.width = 758 - 7 -70- snapRemoteVideo.width ;
+		
+		snapRemoteVideo.height = Math.round(snapRemoteVideo.width /320*240);
+		
+		snapshot_user_video.height = Math.round((758 - 7)/320*240) - snapRemoteVideo.height;
+		
+		chat_message_grid.height = snapshot_target.height - 3 - 34 - 50 - snapshot_user_video.height;
+		
+		validateNow();
+		
+
+		chat_message_grid.verticalScrollPosition = chat_message_grid.maxVerticalScrollPosition;
+		trace(chat_message_grid.maxVerticalScrollPosition);
+		trace(chat_message_grid.height);
+		
+		
+		snapshot_content.addElement(snapshot_separator_column);
+		snapshot_content.addElement(snapshot_partner_column);
+	}
+	
+]]>
+
+</fx:Script>
+	<mx:Canvas backgroundColor="#FFFFFF" visible="true" 
+			   id="snapshot_target" borderStyle="solid" 
+			   horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+			   borderThickness="1" 
+			   borderColor="#D8DFEA" height="570">
+			   <!--y="-800" x="-700">-->
+		<s:VGroup width="100%" gap="3" height="100%">
+			<mx:Image source="@Embed('top.gif')"/>
+			<s:HGroup id="snapshot_content" width="100%" height="100%" gap="0">
+				<s:VGroup id="snapshot_partner_column" height="100%" gap="3">
+					<mx:VideoDisplay id="snapRemoteVideo" width="150" height="113"/>
+					<s:BorderContainer width="100%" height="100%" borderVisible="false"
+									   backgroundImage="@Embed('partner_and_filters.gif')"
+									   backgroundImageFillMode="clip">
+						<mx:Image source="@Embed('user.gif')" right="0" y="0"/>
+						
+					</s:BorderContainer>
+				</s:VGroup>
+				<s:BorderContainer id="snapshot_separator_column" width="7" height="100%" borderVisible="false"
+								   backgroundImage="@Embed('separator.gif')"
+								   backgroundImageFillMode="repeat" >
+				</s:BorderContainer>
+				<s:Group width="100%" height="100%" id="snapshot_user_column" >
+					<s:BorderContainer width="100%" height="47" 
+									   backgroundImage="@Embed('send_box.gif')"
+									   backgroundImageFillMode="repeat" borderVisible="false" bottom="0">
+						<mx:Image source="@Embed('send_button.gif')" right="0"/>
+						<mx:Image source="@Embed('send_box_links.gif')"/>
+					</s:BorderContainer>
+					<mx:VideoDisplay id="snapshot_user_video" width="100%" height="450"/>
+					<mx:Grid id="chat_message_grid" borderThickness="0"
+							backgroundColor="#FFFFFF" verticalGap="0" horizontalGap="0" 
+							width="100%" bottom="50" height="221"
+							horizontalScrollPolicy="off">
+						
+							
+					</mx:Grid>
+				</s:Group>
+			</s:HGroup>
+		</s:VGroup>
+	</mx:Canvas>
+	
+	
+</mx:Application>

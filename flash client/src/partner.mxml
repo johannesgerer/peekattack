@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application initialize="init()" 
+				horizontalScrollPolicy="off" 
+				verticalScrollPolicy="off" 
+				rollOver="appRollOver(event)"  
+				rollOut="appRollOut(event)" 
+				creationComplete="appStart()" 
+				preinitialize="preinit()"  
+				backgroundAlpha="1" 
+				backgroundColor="#eceff6" 
+				xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				layout="absolute" 
+				backgroundGradientColors="[#ECEFF6, #ECEFF6]" 
+				backgroundGradientAlphas="[1.0, 1.0]">
+	<fx:Script source="PeekAttack/FB/PartnerApplication.as">
+	</fx:Script>
+	<fx:Script source="PeekAttack/FB/PartnerJSInterface.as">
+	</fx:Script>
+	<fx:Script source="PeekAttack/FB/Snapshot.as">
+	</fx:Script>
+	<fx:Style>
+		.buttonStyle {
+			color: "0xFFFFFF";
+			textRollOverColor: "0xBBBBBB";
+			textSelectedColor: "0xFFFFFF";
+		}
+		.buttonStyleBlue{
+			color: "0x3B5998";
+			textRollOverColor: "0x3B5998";
+			textSelectedColor: "0x3B5998";
+			fontSize: "14";
+			disabled-color:"0x3B5998";
+		}
+		.buttonStyleBlueSmall{
+			font-size: "12";
+			color: "0x3B5998";
+			textRollOverColor: "0x3B5998";
+			textSelectedColor: "0x3B5998";
+			disabled-color: "0x3B5998";
+		}
+		.buttonStyleBlueLight{
+			font-size: "14";
+			color: "0x788db8";
+			textRollOverColor: "0x788db8";
+			textSelectedColor: "0x788db8";
+			disabled-color:  "0x788db8";
+		}.buttonStyleBlueSmallLight{
+			font-size: "12";
+			color: "0x788db8";
+			disabled-color: "0x788db8";
+			textRollOverColor: "0x788db8";
+			textSelectedColor: "0x788db8";
+		}
+	</fx:Style>
+	
+	
+	<!--#######################   Background Status   ######################## -->	
+	<mx:VBox  width="100%" verticalGap="2" horizontalAlign="center" 
+			  verticalCenter="0" horizontalCenter="0"  >
+		<mx:Text enabled="false"  truncateToFit="true" visible="true"  
+				 fontWeight="bold" fontFamily="Tahoma"  id="statusAreaL1a" 
+				 styleName="buttonStyleBlueLight"/>
+		<mx:Text enabled="false" text="Establishing video ..." 
+				 truncateToFit="true"  visible="true" fontWeight="bold"  
+				 id="statusAreaL2a" fontFamily="Tahoma" 
+				 styleName="buttonStyleBlue"/>
+	</mx:VBox>
+	
+	<!--#######################   VIDEO DISPLAY AND SNAPSHOT  ######################## -->
+	
+	<mx:Canvas backgroundColor="#FFFFFF" visible="true" 
+			   id="snapshot_target" borderStyle="solid" 
+			   horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+			   borderThickness="1" 
+			   borderColor="#D8DFEA" height="570" y="-800" x="-700">
+		<s:VGroup width="100%" gap="3" height="100%">
+			<mx:Image source="@Embed('top.gif')"/>
+			<s:HGroup id="snapshot_content" width="100%" height="100%" gap="0">
+				<s:VGroup id="snapshot_partner_column" height="100%" gap="3">
+					<mx:VideoDisplay id="snapRemoteVideo" width="150" height="113"/>
+					<s:BorderContainer width="100%" height="100%" borderVisible="false"
+									   backgroundImage="@Embed('partner_and_filters.gif')"
+									   backgroundImageFillMode="clip">
+						<mx:Image source="@Embed('user.gif')" right="0" y="0"/>
+						
+					</s:BorderContainer>
+				</s:VGroup>
+				<s:BorderContainer id="snapshot_separator_column" width="7" height="100%" borderVisible="false"
+								   backgroundImage="@Embed('separator.gif')"
+								   backgroundImageFillMode="repeat" >
+				</s:BorderContainer>
+				<s:Group width="100%" height="100%" id="snapshot_user_column" >
+					<s:BorderContainer width="100%" height="47" 
+									   backgroundImage="@Embed('send_box.gif')"
+									   backgroundImageFillMode="repeat" borderVisible="false" bottom="0">
+						<mx:Image source="@Embed('send_button.gif')" right="0"/>
+						<mx:Image source="@Embed('send_box_links.gif')"/>
+					</s:BorderContainer>
+					<mx:VideoDisplay id="snapshot_user_video" width="100%" height="450"/>
+					<mx:Grid id="chat_message_grid" borderThickness="0"
+							 backgroundColor="#FFFFFF" verticalGap="0" horizontalGap="0" 
+							 width="100%" bottom="50" height="221">						
+					</mx:Grid>
+				</s:Group>
+			</s:HGroup>
+		</s:VGroup>
+	</mx:Canvas>
+	
+	
+	<mx:VideoDisplay backgroundColor="#eceff6" visible="true"
+					 backgroundAlpha="0.0"  y="0" width="100%"
+					 height="100%" id="remoteVideoDisplay" x="0"/>
+	
+	
+	
+	<!--#######################   WHITE OVERLAY   ######################## -->	
+	<mx:VideoDisplay backgroundColor="#eceff6" alpha="0.0"
+					 visible="true" width="100%" height="100%" 
+					 id="whiteLayer"/>
+	
+	<!--#######################   USER VIDEO (only visible in single view)   ######################## -->		
+	<mx:VideoDisplay width="32%" visible="false" height="32%" 
+					 id="userWebCamDisplay" bottom="5" right="5" 
+					 backgroundColor="#eceff6"/>
+	
+	<!--#######################   SETTINGS   ######################## -->
+	<mx:Box width="100%" height="100%" >
+		<mx:Canvas id="controlPanel" visible="true"    x="0" y="0" height="100%" 
+				   width="100%" backgroundColor="#000000" backgroundAlpha="0.0" >
+			<!--#######################   Rechts Oben   ######################## -->
+			<mx:Canvas id="appCtl5" right="5" top="5">
+				<mx:VBox verticalGap="0" horizontalAlign="center">
+					<mx:Label text="Bad quality/frame rate?"  fontSize="9" id="l1"/>
+					<mx:Grid horizontalGap="-1" verticalGap="0">
+						<mx:GridRow width="100%"  horizontalAlign="right" 
+									height="100%" >
+							<mx:GridItem horizontalAlign="right" width="100%" 
+										 height="100%">
+								<mx:Label text="Video"  fontSize="9" id="l2"/>
+							</mx:GridItem>
+							<mx:GridItem  width="100%" height="100%">
+								<mx:HSlider minimum="1" maximum="1200" id="vidQual" 
+											width="80" height="10" 
+											change="videoQualityChanged(event)"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem horizontalAlign="right" width="100%" 
+										 height="100%">
+								<mx:Label text="Audio" fontSize="9" id="l3"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle" 
+										 horizontalAlign="right" height="100%">
+								<mx:HSlider minimum="0" maximum="10" id="micQual" 
+											width="80" snapInterval="1" height="10" 
+											change="audioQuality(event)"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+				</mx:VBox>
+			</mx:Canvas>
+			<!--#######################   Links Oben   ######################## -->
+			<mx:Canvas left="5" top="5">
+				<mx:Grid horizontalGap="0" verticalGap="2">
+					<mx:GridRow width="100%"  horizontalAlign="right" height="100%" >
+						<mx:GridItem horizontalAlign="right" width="100%" 
+									 height="100%">
+							<mx:Label text="Cam:" fontSize="9" id="l5"/>
+						</mx:GridItem>
+						<mx:GridItem  width="100%" height="100%">
+							<mx:ComboBox id="cameraSelection"  
+										 dataProvider="{cameraNames}" width="80" 
+										 height="18" fontSize="9" change="cameraIndexChanged()"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%" height="100%">
+						<mx:GridItem horizontalAlign="right" width="100%" height="100%">
+							<mx:Label text="Mic:" fontSize="9" id="l4"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%" verticalAlign="middle" 
+									 horizontalAlign="right" height="100%">
+							<mx:ComboBox id="micSelection"    
+										 dataProvider="{micNames}"   width="80" 
+										 height="18" fontSize="9" change="micIndexChanged()"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+			</mx:Canvas>
+			<!--#######################   Recht Unten   ######################## -->
+			<mx:Canvas right="5" bottom="5">
+				<mx:VBox verticalGap="0" horizontalAlign="center">
+					<mx:CheckBox label="Send Video" fontSize="9" selected="true" width="100" 
+								 id="sendVideoCheckbox" click="reenableCamera()" 
+								 styleName="buttonStyle"/>
+					<mx:CheckBox label="Receive Video" fontSize="9" selected="true" width="100" 
+								 click="onVideoPaused()" id="receiveVideoCheckbox" 
+								 styleName="buttonStyle"/>
+					<mx:Button height="16" label="Allow Cam Access" 
+							    click="ExternalInterface.call('SWF.showCameraSecurity');"/>
+				</mx:VBox>
+			</mx:Canvas>
+			<!--#######################   Links Unten   ######################## -->
+			<mx:Canvas left="5" bottom="5">
+				<mx:Grid horizontalGap="0" verticalGap="2">
+					<mx:GridRow width="100%"  horizontalAlign="right" height="100%" >
+						<mx:GridItem horizontalAlign="right" width="100%" height="100%">
+							<mx:Button toggle="true" height="20" width="20" styleName="buttonStyle" 
+									   id="sendAudioCheckbox" click="reenableMic()">
+								<mx:icon>@Embed(source='mic.png')</mx:icon>
+							</mx:Button>
+						</mx:GridItem>
+						<mx:GridItem  width="100%" height="100%">
+							<mx:HSlider width="70"  minimum="0" maximum="100" height="10" 
+										id="micVolumeSlider" change="micVolumeChanged(event)"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%" height="100%">
+						<mx:GridItem horizontalAlign="right" width="100%" height="100%">
+							<mx:Button toggle="true" labelPlacement="right" textAlign="center" 
+									   height="20" width="20" enabled="true" styleName="buttonStyle" 
+									   click="onAudioMuted()" id="receiveAudioCheckbox">
+								<mx:icon>@Embed(source='speaker-icon2.png')</mx:icon>
+							</mx:Button>
+						</mx:GridItem>
+						<mx:GridItem width="100%" verticalAlign="middle" horizontalAlign="right" 
+									 height="100%">
+							<mx:HSlider width="70" minimum="0" maximum="100" height="10" 
+										id="speakerVolumeSlider" change="speakerVolumeChanged(event)"/></mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+			</mx:Canvas>
+			
+		</mx:Canvas>
+	</mx:Box>
+	
+	<!--#######################   settings button    ######################## -->	
+	<mx:Button  left="10" bottom="10" click="{controlPanel.visible=true;settingsButton.visible=false}" 
+				visible="false" labelPlacement="right" textAlign="center" height="18"  
+				enabled="true" id="settingsButton" label="settings">
+	</mx:Button>
+	<!--END #######################  END SETTINGS  ######################## -->
+	
+	
+	
+	<!--#######################   Status Area   ######################## -->
+	<mx:VBox  width="100%" verticalGap="2" horizontalAlign="center" id="statusArea" 
+			  verticalCenter="0" horizontalCenter="0"  >
+		<mx:Text enabled="false"  truncateToFit="true" visible="true"  fontWeight="bold" 
+				 fontFamily="Tahoma" id="statusAreaL2" styleName="buttonStyleBlueLight"/>
+		<mx:Text enabled="false"  truncateToFit="true"  visible="true" fontWeight="bold" 
+				 fontFamily="Tahoma" id="statusAreaL1" styleName="buttonStyleBlue"/>
+		
+	</mx:VBox>
+	
+</mx:Application>

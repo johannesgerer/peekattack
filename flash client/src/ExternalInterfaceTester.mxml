@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   initialize="init()"
+			   creationComplete="appStart()" 
+			   >
+	<fx:Declarations>
+		<!-- Platzieren Sie nichtvisuelle Elemente (z. B. Dienste, Wertobjekte) hier -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import flash.external.ExternalInterface;
+			import flash.utils.clearTimeout;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.utils.ObjectUtil;
+		
+			private var camera:Camera;
+			
+			private function cameraState(e:StatusEvent):void
+			{
+				ta.text=ObjectUtil.toString(e)+ta.text;
+			}
+			
+		private function appStart():void{
+			camera = Camera.getCamera();
+			
+			camera.addEventListener(StatusEvent.STATUS,cameraState);
+			
+			ExternalInterface.call('onLoad','ExternalInterfaceTester');
+			v1.attachCamera(camera);
+			ta.text="width "+camera.width+" heigt "+camera.height+" FPD "+camera.fps+"\n"+ta.text;
+		}
+			
+			private var to:uint;
+			
+			
+		private function init():void{
+			
+			ExternalInterface.addCallback("echoText", 
+				function(a:*):*{Alert.show(a);});
+			
+		}
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				camera.setMode(parseInt(wi.text),parseInt(he.text),15);
+				ta.text="width "+camera.width+" heigt "+camera.height+" FPD "+camera.fps+"\n"+ta.text;
+			}
+
+
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				camera = Camera.getCamera();
+				v1.attachCamera(camera);
+			}
+
+
+			protected function button3_clickHandler(event:MouseEvent):void
+			{
+				Security.showSettings();
+			}
+
+		]]>
+
+	</fx:Script>
+	<s:Button x="142" y="141" label="Button" click="ExternalInterface.call('testFun','ich bin flash');"/>
+	<s:Button x="142" y="141" label="Button2" click="clearTimeout(to);Alert.show(to.toString());"/>
+	<mx:VideoDisplay x="263" y="103" width="640" height="480" id="v1"/>
+	<s:TextInput x="89" y="210" text="320" id="wi"/>
+	<s:TextInput x="89" y="238" id="he" text="240"/>
+	<s:Button x="10" y="238" label="change res" click="button1_clickHandler(event)"/>
+	<s:TextArea x="54" y="343" id="ta"/>
+	<s:Button x="10" y="303" label="getCamera()" click="button2_clickHandler(event)"/>
+	<s:Button x="42" y="103" label="showSettings" click="button3_clickHandler(event)"/>
+</s:Application>

@@ -1,0 +1,535 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+<!--require_once "include/api_key_secret.php";-->
+<!--require_once "include/functions.php";-->
+<!-- TODO brauchen wir das xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" dir="ltr" lang="en">-->
+
+<head>
+<link rel="icon" href="favicon2.ico" />
+<link rel="shortcut icon" href="favicon2.ico" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="description" content="peekAttack Webcam Chat with Random Strangers and Facebook support" />
+<meta name="keywords" content="peekAttack, peekAttack.com, webcam, chat, facebook, facebook webcam, facebook chat, call, phone, chatroulette, skype, video chat, video, peer 2 peer, p2p, dating, partner, conversation, video conversation, filters, naked filter, clean, family friendly, non-nude, nudity filter" />
+
+<title>peekAttack</title>
+
+<!-- Google Info -->
+<script src="http://www.google.com/jsapi" 															type="text/javaScript" language="JavaScript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools-yui-compressed.js" 		type="text/javaScript" language="JavaScript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js" 						type="text/javaScript" language="JavaScript"></script>
+<script src="fbconnect-js/06-03.js" 																type="text/javaScript" language="JavaScript"></script>	
+
+
+<!--<link href="peekattack.css" rel="stylesheet" type="text/css" />-->
+<!--<script type="text/javaScript"	language="JavaScript"  src="peekattack.js"></script>-->
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/fb.css" rel="stylesheet" type="text/css" />
+<link href="css/flags_v1.01.css" rel="stylesheet" type="text/css" />
+
+
+<!--More contains: Element.Forms, HtmlTable -->
+<script src="JavaScript/030mootools-1.2.4.4-more.js" 	type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/040ape_client.js" 				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/050code.js" 					type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/060waitable.js" 				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/070app.js" 						type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/080imagePreload.js" 			type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/090facebook.js" 				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/100swf.js" 						type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/110user_actions.js"				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/120ape.js" 						type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/130chat.js" 					type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/140userinfo.js" 				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/150dropdown.js" 				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/160snapshots.js" 				type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/170user_interface.js" 			type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/180ratings_and_credits.js" 		type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/190filterAndProperties.js" 		type="text/javaScript" language="JavaScript"></script>
+<script src="JavaScript/200ads.js" 						type="text/javaScript" language="JavaScript"></script>
+
+
+	
+<script src="settings.js" 				type="text/javaScript" language="JavaScript"></script>
+
+	
+</head>
+
+<body>
+
+
+<div id="debug"
+	style="display: block; position: absolute; left: 760px; z-index: 10">
+<div id="bla">bla</div></div>
+
+<div id="fb-root"></div>
+
+<!---->
+<!--<iframe id="ape_peekattackape" style="display: none; position: absolute; left: -300px; top: -300px;" src="ape-core.html"></iframe>-->
+
+ 
+
+<script type="text/javascript">
+
+
+App.init();
+
+
+</script>
+
+
+<div id="body">
+
+<div id="dialog_container"></div>
+<div id="container">
+
+	<a href="#" id="facebook_bookmark" style="display:none" onclick="Facebook.openBookmarkDialog();return false;" class="uiButton uiButtonDefault uiButtonMedium delayedtip" rel="Add a bookmark to your Facebook Home Page">
+	<i class="customimg img spritemap_5xqgql sx_abccc4"></i>
+	<span class="uiButtonText">Add Bookmark</span>
+	</a>
+	
+	<div id="fb_connect_button" style="cursor:pointer;display:none">
+	<a href="#" onclick='FB.login(Facebook.CheckLogin);return false;' class="fb_button fb_button_medium">
+		<span class="fb_button_text">Start peekAttack</span>
+	</a>
+<!--	Takes too long and is not working in IE at all (or not without further investigation)-->
+<!--		<fb:login-button v="2" >			  -->
+<!--			<fb:intl>Connect to peekAttack</fb:intl>-->
+<!--		</fb:login-button>-->
+	</div>
+<div>
+<div class="top_bar" id="profile_top_bar" style="display:none">
+<div class="profile_top_bar_container">
+<div class="tabs_wrapper clearfix">
+<h1 id="profile_name">peekAttack</h1>
+<ul class="chat_actions">
+<li class="spacer"><span> </span></li>
+	<li id="next_li"><!-- Click	event is registered in swf.js --><span class="delayedtip" id="next_button" rel="Next partner (F9)">
+		<a class="tab_link profile_tab" href="" onclick="return false;">
+	<div class="app_tab_header">
+	<div class="app_tab_icon">&nbsp;</div>
+	<div class="app_tab_title">Next</div>
+
+	</div>
+	</a></span></li>
+	<li id="stop_li" class=""><span class="delayedtip" id="stop_button"  rel="Stop video chat (F2)" > <a class="tab_link profile_tab" href="" onclick="return false;">
+	<div class="app_tab_header">
+	<div class="app_tab_icon">&nbsp;</div>
+	<div class="app_tab_title">Stop</div>
+
+	</div>
+	</a></span></li>
+	<li id="snapshot_li"><span id="take_snapshot_button" class="delayedtip" rel="Take a snapshot (F8)"> <a class="tab_link profile_tab" href="" onclick="return false;">
+	<div class="app_tab_header">
+	<div class="app_tab_icon">&nbsp;</div>
+	<div class="app_tab_title">Snapshot</div>
+
+	</div>
+	</a></span></li>
+	<li class="spacer"><span> </span></li>
+</ul>
+<ul class="tabs" id="profile_tabs">
+	<li id="chat_li" class="selected"><span onclick="UI.navigateTo('chat');"><a class="tab_link profile_tab" href="" onclick="return false;">
+	<div class="app_tab_header">
+	<div class="app_tab_icon">&nbsp;</div>
+	<div class="app_tab_title">Chat</div>
+	</div>
+	</a></span></li>
+	<li id="history_li"><span id="snapshots_button"> <a class="tab_link profile_tab" href="" onclick="return false;">
+	<div class="app_tab_header">
+	<div class="app_tab_icon">&nbsp;</div>
+	<div class="app_tab_title">Snapshots</div>
+	</div>
+	</a></span></li>
+	<li id="settings_li"><span onclick="UI.navigateTo('settings');"> <a class="tab_link profile_tab" href="" onclick="return false;">
+	<div class="app_tab_header">
+	<div class="app_tab_icon">&nbsp;</div>
+	<div class="app_tab_title">More</div>
+	</div>
+	</a></span></li>
+
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="content">
+<div id="app_loading_bar" style="width: 100%;display:block;" >
+<div class="loading_container">
+<div class="loading">Loading</div>
+</div>
+</div>
+<div id="app_retry_notice" style="display:none">If the App does not start, <a href="#" onclick="window.location.href = unescape(window.location.href);">click here</a> to try again.</div>
+<div id="ie6_notice" style="display:none">Internet Explorer 6 is currently not supported by peekAttack. Please upgrade to <a href="http://www.microsoft.com/windows/internet-explorer/worldwide-sites.aspx" target="_top">Internet Explorer 8</a>.</div>
+<div id="partner_column" class="partner_column" style="">
+<div id="partner_container" style="cursor: pointer;">
+	<div id="partner_swf" >
+			<a href="http://www.adobe.com/go/getflashplayer" id="partner_getFlashPlugin" style="display:none">
+					<img border="0" src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+				</a>
+	</div>
+</div>
+
+<div id="information_container" style="display:none">
+<div id="chat_page_container">
+<div id="profile_information">
+<div id="partner_profile" style="display:none;">
+	<div class="link_container">
+		<a href="#" target="_blank" id="partner_pic_link" style="display:none">
+			<img id="partner_pic" alt="Partner Picture" src="graphics/fb_t_silhouette.jpg" />
+		</a> 
+		<img id="partner_pic_stranger" alt="Stranger Picture" src="graphics/fb_t_silhouette.jpg" />
+		<div class="profile_link">
+			<div>
+				<a href="#" class="user_name" target="_blank" id="partner_name" style="display:none"></a>
+				<span class="user_name" id="partner_name_stranger">Stranger</span>
+			</div>
+			<div id="request_profile_button" style="display:none">
+				<a href="#" onclick="requestPartnerProfile();return false;">Request name</a>
+			</div>
+			<div id="request_profile_waiting" style="display:none">Waiting for response...</div>			
+			<div>
+				<span id='partner_country'></span>
+			</div>
+			<div>
+			<span id='partner_languages'></span>
+			</div>
+			<div>
+				<span class="delayedtip" style="cursor:help" title="Earn Credits by telling us if" rel="your partner is naked or not">Credits:</span> <span id='partner_credits'></span>
+			</div>
+		</div>
+		<div style="clear: both;"></div>
+	</div>
+	
+	<div id="partner_details">
+	</div>
+</div>
+
+<div id="user_profile">
+	<div class="link_container">
+		<a target="_blank"	href="#" id="user_pic_link" style="display:none;"> 
+			<img id="user_pic" alt="User Picture" src="graphics/fb_t_silhouette.jpg" /> 
+		</a>
+		<img id="user_pic_anon" alt="Anonymous User Picture" src="graphics/fb_t_silhouette.jpg" />
+		<div class="profile_link">
+			<div>
+				<span class="user_name" id="user_name_anon">You</span>
+				<a class="user_name" target="_blank" href="#" id="user_name" style="display:none;"></a>
+			</div>
+			<div>
+				<div class="delayedtip" rel="Use my Facebook account" id="profile_connect_button">
+					<a class="fb_button fb_button_small" onclick='FB.login(Facebook.CheckLogin);return false;' href="#">
+						<span class="fb_button_text">Connect</span>
+					</a>
+				</div>
+				<a class="delayedtip" rel="Share my profile with partner" href="#" onclick="sendProfile(1);return false;" id="share_profile_button" style="display:none;">Share name</a>
+				<span id="share_profile_shared" style="display:none;">Name shared</span>
+			</div>
+			<div class="delayedtip" style="cursor:help" title="Earn Credits by telling us if" rel="your partner is naked or not">Credits: <span id="user_credits">0</span></div>
+		</div>
+		<div style="clear: both;"></div>
+	</div>
+	
+</div>
+
+<div class="clearfix"></div>
+<div id="filters_top_container">
+	<div>
+		<div id="filters_header" style='cursor:help' class="delayedtip" rel="Click on a filter below">Who do you want to chat with?</div>
+		<div id="filters_container"></div>
+		<div id="filters_footer">Selected: <span id="selected_user_count"></span>&nbsp;of <span id="total_user_count"></span>&nbsp;online users</div>
+	</div>
+</div>
+<div id='chat_ads_container'></div>
+</div>
+
+</div>
+
+
+<div id="hidden_information_container" style="display: none">
+<div id="history_container">
+<div id="snapshot_container">
+<div id="snapshot_caption">
+
+	<span id="caption_hide_snapshot_button">
+		<a href="#" onclick="hideSnapshot();return false;">Back to Snapshots Album</a> 
+	</span>
+	<span id="caption_share_snapshot_button">
+		<span class="pipe_spacer"> | </span> 
+		<a href="#" id="save_to_facebook" >Save to Facebook Album</a>
+		<a href="#" id="open_in_facebook" target="_blank">Open in Facebook Album</a>
+	</span>
+	<span id="delete_snapshot_button">
+		<span class="pipe_spacer"> | </span> 
+		<a href="#" onclick="deleteSnapshot();return false;">Delete</a>
+	</span>
+	<span id="caption_next_snapshot_button">
+		<span class="pipe_spacer"> | </span> 
+		<a href="#" onclick="displayNextSnapshot();return false;">Previous</a>
+	</span>
+	<span id="caption_previous_snapshot_button">
+		<span class="pipe_spacer"> | </span> 
+		<a href="#" onclick="displayPreviousSnapshot();return false;">Next</a>
+	</span>
+	<a title="Send this to friends or post it on your profile." 
+			id="photo_share" rel="dialog" href="#" onclick="FBSharePhoto();return false;" 
+			class="mbm uiButton uiButtonDefault uiButtonMedium">
+			<i class="img spritemap_3jkv60 sx_713902"></i>
+			<span class="uiButtonText">Share</span>
+		</a>
+</div>
+<div id="snapshot_loading_bar">
+<div class="loading_container">
+<div class="loading">Loading</div>
+</div>
+</div>
+<img id="snapshot" onclick="displayPreviousSnapshot();" src="" alt="Snapshot"/>
+<div class="date" id="snapshot_caption_date"></div>
+</div>
+<div id="snapshot_empty">To take a snapshot of your current conversation click <a href="#" onclick='onSnapshotClick()'>Snapshot</a> or press F8.</div>
+<div id="thumbs_container">
+<div id="loading_thumb" class="history_thumb" style="display:none">
+<div class="loading_container">
+<div class="loading">Loading</div>
+</div>
+</div>
+<div id="more_snapshots_button" class="history_thumb"
+	style="display: none;"><a class="more_container" href="#" onclick="getSnapshots();return false;">
+<div class="more">More...</div>
+</a></div>
+<div id="loading_thumb_end" class="history_thumb" style="display: none;">
+<div class="loading_container">
+<div class="loading">Loading</div>
+</div>
+</div>
+<div class="clearfix"></div>
+<div id="delete_all_snapshots" style="display:none;">
+	<a href="" onclick="deleteAllSnapshots();return false;">Delete All Snapshots</a>
+</div>
+</div>
+</div>
+
+<!--<div id="invite_container">-->
+<!--<fb:serverFbml style="width: 500px;">  -->
+<!--<script type="text/fbml">  -->
+<!--<fb:fbml>  -->
+<!--<fb:request-form method="post" action="index.php" content="hey" type="sample" invite="true"> -->
+<!-- <div class="clearfix" style="padding-bottom: 10px;"> -->
+<!-- <fb:multi-friend-selector condensed="true" selected_rows="0" style="width: 200px;" /> -->
+<!-- </div>  -->
+<!--<fb:request-form-submit />  -->
+<!--</fb:request-form> -->
+<!--</fb:fbml>  </script>  </fb:serverFbml>-->
+<!--<fb:serverFbml style="width: 500px;">  -->
+<!--<script type="text/fbml">  -->
+<!--<fb:fbml>  -->
+<!--<fb:request-form target="_blank" action="<url for post invite action, see wiki page for fb:request-form for details>" method="POST" invite="true" type="XFBML" content="This is a test invitation from XFBML test app <fb:req-choice url='see wiki page for fb:req-choice for details' label='Ignore the Connect test app!' />  " >-->
+<!--<fb:multi-friend-input width="350px" border_color="#8496ba" />-->
+<!--  -->
+<!--</fb:request-form>  -->
+<!--</fb:fbml>  </script>  </fb:serverFbml>-->
+<!--</div>-->
+	<div id="settings_container">
+	<h2>Feedback</h2>
+	<p>
+	Visit our <a style="font-weight: bold;" target="blank" href="http://www.facebook.com/apps/application.php?id=378549925479">peekAttack Facebook Page</a>
+	to review this application, leave comments and critics on its wall and <b>Invite Your Facebook Friends</b>. 
+	</p>
+	<p id="external_page_link" style="display:none">
+	You can also use peekAttack outside of Facebook: <a style="font-weight: bold;" target="_top" href="http://www.peekattack.com/">www.peekattack.com</a>
+	</p>
+	<h2>Information</h2>
+		<h3 id="doc_privacy">Privacy</h3>
+			<p id="doc_privacy_cont">
+			On peekAttack you are anonymous, even if you are connected using your Facebook Account. But, if you
+		  	want to tell your current partner who you are, click on <b>"Share Name"</b>
+		  	next to your name and your partner will be able to see your Name, Profile Picture and 
+		  	a Link to your Facebook Page.<br/>
+		  	Notice that, as soon as you disconnect or get connected to the next Partner, you will
+		  	be anonymous again. 
+			</p>
+		
+	<h3 id='doc_snapshots'>Snapshots</h3>
+	
+	<p id="doc_snapshots_cont">Your Snapshots are private and visible only to you, as long as you don't save them.<br/>
+		If you <img style="vertical-align:-5px;" src="graphics/shareSnapshot.gif" alt="Share Snapshot" />
+		a snapshot, peekAttack will ask for permission to 
+		create and fill a peekAttack photo album for your Facebook account. Depending on your 
+		privacy settings, everyone who can browse your albums, will be able to see them.
+		Shared snapshots will also appear on your wall.<br/>
+		</p>
+		
+	<h3 id="doc_credits">Credits and the Nudity Filter</h3>
+	
+	<p id="doc_credits_cont">
+		peekAttack depends on your help when it comes to the 'nudity' filter. <br/>
+		That's why you can earn Credits by answering the question <b>"Is your partner naked?"</b> correctly.
+		A few minutes after you give the answer, you will receive the credits on your account.
+		Note that you can also get negative credits if your answer turns out to be incorrect!<br/>
+		<br/>
+		<b>The more credits you have, the higher is the priority 
+		to find a partner for you.</b>
+<!--		When peekAttack establishes calls, it starts connecting users holding the -->
+<!--		highest amount of credits, working its way down to the users with only few or negative credits.-->
+<!--		This process stops, if no further calls can be established, either because due to mismatching-->
+<!--		filter selections or because the streaming servers are full. The remaining users have to wait -->
+<!--		for the next round.<br/>-->
+<!--		<b>Your credits will have significant impact, if you narrow down the number of possible-->
+<!--		chat partners by chosing very selective filters.</b><br/>-->
+		For example: If there are 20 people waiting to talk to a girl from France, and you have 
+		the most credits,
+		you will be the first who gets to talk to her.<br/><br/>
+<!--		So, if you want to choose who to speak to, you can improve your chances by earning credits.-->
+		To keep things in balance, a credit will expire after a couple of days.<br/>
+		Your credits are displayed below your profile information.
+	</p>
+	
+	<h3 id="doc_swapcolumns">Swap and Resize columns</h3>
+	
+		<p id="doc_swapcolumns_cont"><b>Double-click</b> or <b>move</b> the <b>grey line</b> 
+		between the two videos to swap their position or resize them.<br/>
+		Alertnatively you can click the arrow symbol 
+		<img onclick="UI.swapColumns();return false;" style="vertical-align: middle; cursor:pointer" 
+			src='graphics/swap_arrows.png' alt="Swap Columns" />, that appears if you move your mouse over the  grey line.
+		</p>
+		  
+
+	<h2>Settings</h2>
+	<h3 id="doc_cam">Camera Access</h3>
+		<p id="doc_cam_cont" >
+		<img style='float:left;cursor:pointer;margin-right:7px;' class='delayedtip' rel="click to allow access" boarder=0 src="graphics/secutirypanel.png" onclick="SWF.showCameraSecurity()">
+		You need to give the permission to access your webcam 
+		<b>twice</b>: If you deny it on the right side, you will not see yourself. 
+		If you deny it on the left side your partner will not see you and the 
+		Camera filter will mark you as 'without webcam'.<br/>
+		To give the permission <b>manually</b>, click on the small image in this text or in the your partner's video click the 'settings'-
+		and then the 'Allow Cam Access'-button.
+		
+	<h3 id="doc_videoaudio">Video/Audio settings</h3>		
+		<div id="doc_videoaudio_cont">
+		<p>Move your mouse over your partner's video and a 
+		'Settings' button will appear. Click on it to change the following settings:
+		</p>
+		<ul>
+		  <li><b>Webcam and Microphone:</b> Select which camera and microphone to use (top left corner).</li>
+	    	<li><b>Incoming video bitrate:</b> Select a value in kbit/s (top right corner). A lower value will lead to 
+		  	worse quality but higher framerate and smoother motion. This value should not be higher 
+		  	than your downstream or your partner's upstream</li>
+		  	<li><b>Microphone encoding quality:</b>Change your partner's encoding quality (top right corner). 
+		  	A low value means bad sound quality. A value higher than your own / your partner's bandwith will cause audio interruptions.
+		  </li>
+		  <li><b>Pause Video:</b> Pause your own or your partner's video stream (bottom right corner).</li>
+		  <li><b>Volume/Mute: </b> Change the volume or mute your speaker and microphone (bottom left corner).</li>
+		</ul>
+		</div>
+		
+	<h3 id="doc_p2p">Peer-to-peer connections</h3>
+		<p id="doc_p2p_cont" >Status: <b>You are <span style='display:none' id='notUDP'>not</span>
+		using peer-to-peer connections (P2P).</b><br/>
+		<span style='display:none' id='notUDP2'>Your firewall, router or proxy settings do not allow P2P connections.
+		Try to change these settings and reload peekAttack.	Then recheck your status above.</span><br/>
+		P2P connections lead to better video and audio quality.
+<!--		The first call that is established for you will always ba a  -->
+<!--		<a href="http://en.wikipedia.org/wiki/Peer-to-peer">Peer-to-peer (P2P)</a> connection.-->
+<!--		It lies in the nature of P2P that the number of concurrent peekAttack conversations -->
+<!--		is practically unlimited. The streaming quality will not be affected by the number of total-->
+<!--		connections.<br/>-->
+<!--		The Problem: Some routers, firewalls, proxy servers (, ...) do not allow the kind of P2P -->
+<!--		connection that peekAttack uses, which will lead to a failure of your first connection and a-->
+<!--		fallback to the conventional client-server streaming method, where the two connected users-->
+<!--		both connect to a streaming server that will pass the stream to the other.-->
+<!--		As every server can only handle a limited number of streams, when there are two many -->
+<!--		connections, the quality will suffer or the server might not even accept new connections.<br/>-->
+		
+		</p>
+		
+		<h3 id="doc_lang">Your Languages</h3>
+		
+		<p id="doc_lang_cont">PeekAttack recognized the following languages: <span id="user_languages" style="font-weight: bold;"></span></p>
+		
+		<h3 id="doc_gender">Your Gender</h3>
+		
+		<p id="doc_gender_cont">You selected: <span id="user_gender" style="font-weight: bold;">unkown</span></p>  
+		
+	
+	</div>
+</div>
+
+
+
+
+
+
+
+</div>
+</div>
+<a id="separator"  ondblclick="UI.swapColumns();" class="separator" style="display: none">
+<div id="separator_spacer" class="clearfix"></div>
+<div id="separator_line" class="separator_line">
+<div id="swap_symbol" onmousedown="UI.swapping=true;"
+	onclick="UI.swapColumns();"></div>
+<!--	symbol TODO vorausladen-->
+</div>
+</a>
+<div id="user_column" class="user_column">
+<div id="user_container">
+	<div id="user_swf">
+	</div>
+</div>
+<div id="chat_container" style="display: none">
+<div id="question_box_container">
+	<div title="Earn Credits by telling us if" rel="your partner is naked or not" id="question_box_naked" style="display: none;cursor:help" class="delayedtip standard_button question_box">
+		Is your partner naked? <a class="notInText" onclick="onNakedRate(true);">Yes</a>
+		 <a class="notInText" onclick="onNakedRate(false);">No</a>
+	</div>
+	<div id="question_box_gender" style="display: none;" class="question_box standard_button">
+		Are you <a onclick="onGender(-1);">female</a>
+		or <a onclick="onGender(1);">male</a>?
+	</div>
+	<div id="question_box_name" style="display: none" class="standard_button question_box">
+		Your Partner wants to know your Facebook Name:
+		<a onclick="onShareName(1);" class="notInText">Share</a>
+		<a onclick="onShareName(0);" class="notInText">Ignore</a>
+	</div>
+</div>
+<div id="chat_message_container">
+	<div id="conversation_spacer"></div>
+	<div id="old_conversations"></div>
+	<div id="current_conversation_container"></div>
+</div>
+<div id="chat_input_container">
+<div id="textarea_container">
+<!-- TODO: was hat das 'on' hier verloren? -->
+<div id="textarea_container2"><textarea id="chat_input_container_textarea" name="chat_input"></textarea></div>
+</div>
+<div id="chat_controls">
+<span class="standard_button" id="chat_send_button"><input type="submit" class="standard_button_text" value="Send" onclick="onSendChatMessage();" /></span>
+<label class="tooltip" rel="Let your partner see what you're typing" id="turbo_chat"><input type="checkbox" checked="checked" id="TurboChat" value="TurboChat"/>
+<span>Turbochat</span>
+</label></div>
+</div>
+
+<div id='usercol_ads_container'>
+
+</div>
+
+</div>
+
+
+
+</div>
+</div>
+</div>
+
+</div>
+
+
+
+
+
+</body>
+</html>

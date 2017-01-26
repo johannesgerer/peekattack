@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   initialize="init()">
+	<fx:Declarations>
+		<!-- Platzieren Sie nichtvisuelle Elemente (z. B. Dienste, Wertobjekte) hier -->
+	</fx:Declarations>
+	<fx:Script>
+		private var red5url:String = "rtmp://89.149.217.111/peekAttack";
+		private var connection:NetConnection;
+		private var streamName:String = "";
+		private var so:SharedObject;
+		
+		private function init():void{
+			connection = new NetConnection();
+			connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			connect();
+		}
+		private function log(msg:String):void{
+			ta.appendText(msg+"\n");
+		}
+		
+		private function connect():void{
+			log("connecting...");
+			connection.connect(red5url,"FFDC64B5E23F86CBD51032B72C833A4ABD89E405FB70D6CE67D5E645A8492E04");
+		}
+		
+		private function netStatusHandler(event:NetStatusEvent):void{            
+			log(event.info.code);
+			
+			switch (event.info.code) {
+				case "NetConnection.Connect.Success":
+					
+					so=SharedObject.getRemote("t",connection.uri);
+					so.connect(connection);
+					
+					so.client={'msg':function (a:*):*
+					{
+						log("received message: "+a);
+					}};
+					
+					break;
+				
+				
+				case "NetStream.Play.StreamNotFound":
+					break;
+			}
+		}
+		private function securityErrorHandler(event:SecurityErrorEvent):void{
+			log("securityErrorHandler: " + event);
+		}
+		
+		
+		private function play():void{
+			streamName = sn.text;
+			stream = new NetStream(connection);
+			stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			//stream.client = new CustomClient();
+			stream.play(streamName);
+			
+				
+		}
+		private var stream:NetStream;
+		private function publish():void{
+			streamName = sn.text;
+			stream = new NetStream(connection);
+			stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			//stream.client = new CustomClient();
+			stream.publish(streamName);
+			
+		}
+		
+		private function sendMessage():void{
+			so.send("msg",messageBox.text);
+			
+			log("sent message: "+messageBox.text);
+		}
+	</fx:Script>
+	<s:TextArea x="38" y="39" id="ta" width="554" height="225"/>
+	<s:Label x="297" y="20" text="Stream Name"/>
+	<s:TextInput x="376" y="12" id="sn" text="test_stream"/>
+	<s:TextInput x="119" y="276" id="messageBox" text="message"/>
+	<s:Button x="104" y="10" label="Publish" id="pu" click="publish();"/>
+	<s:Button x="194" y="10" label="Play" id="pl" click="play();"/>
+	<s:Button x="10" y="10" label="Connect" id="co" click="connect();"/>
+	<s:Button x="10" y="272" label="Send Message" click="sendMessage()"/>
+</s:Application>

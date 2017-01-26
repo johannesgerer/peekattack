@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application initialize="init()" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:MyComp="myComponents.*" layout="absolute">
+	<mx:Script>
+		<![CDATA[
+			import flash.display.BitmapData;
+			import flash.sampler.NewObjectSample;
+			import flash.utils.setTimeout;
+			
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Text;
+			import mx.controls.TextArea;
+			import mx.core.UIComponent;
+			import mx.graphics.codec.JPEGEncoder;
+			import mx.messaging.channels.NetConnectionChannel;
+			import mx.utils.Base64Encoder;
+			import mx.utils.ObjectUtil;	   
+			
+			public var video:Video
+			public var video2:Video
+			
+			public function init():void
+			{
+				
+				var videoHolder:UIComponent = new UIComponent();
+				
+				var camera:Camera = Camera.getCamera("0");
+				camera.setMode(320,240,15);
+				video = new Video(camera.width, camera.height);
+				
+				video.attachCamera(camera);
+				videoHolder.addChild(video);
+				videoHolder.x=400;
+				addChild(videoHolder);
+				videoHolder.y =10;
+				
+			}
+			public function takeSnapshot():void{
+				
+				var texta:TextArea=new TextArea();
+				var snapshotHolder:UIComponent = new UIComponent();
+				var snapshot:BitmapData = new BitmapData(320, 240, true);
+				var snapshotbitmap:Bitmap = new Bitmap(snapshot);
+				snapshotbitmap.transform.matrix=new Matrix(0.5,0,0,0.5);
+				snapshotHolder.y =10;
+				//snapshotHolder.addChild(snapshotbitmap);
+				addChild(snapshotHolder);
+				visible=true;
+				//snapshot.draw(receivdis);
+				
+				//snapshot.draw(video2);
+				snapshot.draw(receivdis);
+				
+				var ima:Image=new Image();
+				ima.load(new Bitmap(snapshot,"auto",true));
+				ima.content.width=130;
+				ima.content.height=Math.round(240/320*130);
+				
+				var bitmapdata2:BitmapData =new BitmapData(320,240);
+				bitmapdata2.draw(ima);
+				var bitmap2:Bitmap =new Bitmap(snapshot);
+				snapshotHolder.addChild(bitmap2);
+				
+				var jpgEncoder:JPEGEncoder = new JPEGEncoder();
+				var imageData:ByteArray = jpgEncoder.encode(snapshot);
+				trace(ObjectUtil.toString(imageData));
+			
+			}
+			
+			
+			private var nc1:NetConnection;
+			private var nc2:NetConnection;
+			private var sending:Boolean=true;
+			private var ID1:String;
+			private var outStream:NetStream;
+			private var inStream:NetStream;
+			
+			private function startstrem():void{
+				var nc:NetConnection=new NetConnection();
+				nc1=new NetConnection();
+				nc1.addEventListener(NetStatusEvent.NET_STATUS,handler1);
+				
+				nc2=new NetConnection();
+				nc2.addEventListener(NetStatusEvent.NET_STATUS,handler2);
+				
+				nc.addEventListener(NetStatusEvent.NET_STATUS,handler);
+				nc.addEventListener(IOErrorEvent.IO_ERROR,handler);
+				nc.addEventListener(IOErrorEvent.NETWORK_ERROR,handler);
+				nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR,handler);
+				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR,handler);
+				
+				
+				nc1.client={ onBWDone :function(...numbers):*{
+					trace(numbers.length);
+				} };
+				nc2.client=nc1.client;
+				
+				nc1.connect(stratus);
+				
+				
+				
+			}
+			
+			private var rmtfpServerUrl:String=
+				"rtmfp://188.72.224.52:41935/live/first";
+			//8080, 41935
+			
+			private var rmtfpServerUrl2:String=
+				"rtmfp://188.72.224.52:8080/live/first";
+			
+			private const	DeveloperKey				:String = "04e5d33437110ee0363288f5-91187653a6fc";
+			private const	connectUrl					:String = "rtmfp://stratus.adobe.com";
+			private const stratus:String  = connectUrl+"/"+DeveloperKey;
+			
+			private function handler(e:NetStatusEvent):void{
+				trace(e.info.toString());
+				trace(e.info.code);
+			}
+			
+			private function handler1(e:NetStatusEvent):void{
+				switch(e.info.code)
+				{
+					case "NetConnection.Connect.Success":
+					
+					ID1=nc1.nearID;
+					button_strat.label="Started...";trace(ID1);
+					video = new Video(320,240);
+					
+					outStream=new NetStream(nc1,NetStream.DIRECT_CONNECTIONS);
+					outStream.publish("johannes");
+					outStream.attachCamera(Camera.getCamera());
+					
+					nc2.connect(stratus);
+					
+					break;
+					
+					default:
+						trace("1: "+e.info.code);
+						
+				}
+			}
+			
+
+
+			private function handler2(e:NetStatusEvent):void{
+				switch(e.info.code)
+				{
+					case "NetConnection.Connect.Success":
+					inStream=new NetStream(nc2,ID1);
+					inStream.play("johannes");
+					video2 = new Video(320,240);
+					video2.attachNetStream(inStream);
+					receivdis.addChild(video2);
+					
+					a();
+					break;
+					
+					default:
+						trace("2: "+e.info.code);
+						
+				}
+			}
+			
+			private var i:int=0;
+			
+			private function a():void{
+				i++;
+				outStream.send("|RtmpSampleAccess",true,true);
+				
+				try{
+					var snapshotHolder:UIComponent = new UIComponent();
+					var snapshot:BitmapData = new BitmapData(320, 240, true);
+					var snapshotbitmap:Bitmap = new Bitmap(snapshot);
+					snapshotHolder.y =10;
+					snapshotHolder.addChild(snapshotbitmap);
+					addChild(snapshotHolder);
+					visible=true;
+					snapshot.draw(video2);
+				}catch(e:*)
+				{
+					//trace(i+"\n");	
+					setTimeout(a,10);
+				}
+				
+				
+			}
+			
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				inStream.close();
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Button x="288" y="389" label="Take Snapshot" click="takeSnapshot()"/>
+	
+	<mx:Button x="21" y="474" label="Strat streaminig" click="startstrem()" id="button_strat"/>
+	<mx:VideoDisplay x="157" y="440" width="320" height="240" id="viddis"/>
+	<mx:VideoDisplay x="597" y="449" width="320" height="240" id="receivdis"/>
+	<mx:Text x="38" y="277" text="Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text " id="ass"/>
+	<mx:Button x="41" y="528" label="Button" click="button1_clickHandler(event)"/>
+</mx:Application>

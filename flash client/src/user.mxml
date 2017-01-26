@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application preinitialize="preinit()" initialize="init()" 
+				backgroundAlpha="0.0" 
+				xmlns:fx="http://ns.adobe.com/mxml/2009"				
+				creationComplete="appStart()" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				layout="absolute"  width="100%" height="100%">
+<fx:Script>
+	<![CDATA[
+		private var localSOname : String = "peekAttackSettings7";//AUCH IN PartnerApplication.SWF!!!!!!!!!!! 
+		import flash.utils.setTimeout;
+		
+		import mx.controls.Alert;
+		import mx.core.FlexGlobals;
+		import mx.utils.ObjectUtil;
+
+	private var camera						:Camera	;
+   	private var localSO						:SharedObject;
+   	
+   	private function preinit():void
+   	{
+		
+		ExternalInterface.addCallback("showCameraSecurity",showCamerSecurity );
+
+		ExternalInterface.addCallback('selectCamera',selectCamera);
+		
+		
+		ExternalInterface.call("SWF.setSwitch",'user_load');
+		
+   	}
+		
+		private function showCamerSecurity():void
+		{
+			if(camera && camera.muted)
+			{
+				Security.showSettings(SecurityPanel.PRIVACY);
+				ExternalInterface.call('UI.setSizeForFlashSecurityPanel');
+			}			
+		}
+   	
+   	
+   	public function selectCamera(index:int):void
+   	{
+   		camera = Camera.getCamera(index.toString());
+  		if(camera)
+  		{
+  			if(camera.muted)
+			{
+				ExternalInterface.call('UI.setUserColumnWidth',250);
+				Security.showSettings(SecurityPanel.PRIVACY);
+			}
+				
+			videoDisplay.attachCamera(camera);
+			videoDisplay.visible=true;
+		}	
+   	}
+   	private function appStart():void
+	{
+	}
+   	private function init():void
+	{	
+		
+		localSO = SharedObject.getLocal(localSOname,"/");//ACHTUNG auch in PartnerAplication.as
+		
+		var selectedCamera:int=0;
+		
+		
+		var cameraNames:Array = Camera.names; 
+		// set Mac default camera
+		
+		if(cameraNames.length>0)
+		{
+			if (Capabilities.os.search("Mac") != -1)
+			{
+				while(cameraNames[selectedCamera] != "USB Video Class Video" &&
+					selectedCamera < cameraNames.length)
+				selectedCamera++;
+			}
+			
+			if (localSO.data.hasOwnProperty("cameraIndex"))
+				selectedCamera = localSO.data.cameraIndex;
+							
+			selectCamera(selectedCamera);
+			
+		}
+	}
+	
+	]]>
+</fx:Script>
+	
+	<mx:VideoDisplay visible="false"  y="0" width="100%" 
+   height="100%" id="videoDisplay" backgroundColor="#ECEFF5" x="0"/>
+	
+</mx:Application>
+
+

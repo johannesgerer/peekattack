@@ -1,0 +1,25 @@
+var databaseName = "peekAttackBeforeLive";
+
+//max
+/*
+//define('APP_ID', '');
+var FBappApiSecret = '';
+*/
+
+//jo
+/*
+//define('APP_ID', '');
+var FBappApiSecret = '';
+*/
+
+//test (beforelive)
+/*
+//define('APP_ID', '');
+var FBappApiSecret = '';
+*/
+
+//live
+/*
+//define('APP_ID', '');
+var FBappApiSecret = '';
+*/
